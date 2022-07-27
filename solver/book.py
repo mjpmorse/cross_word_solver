@@ -9,7 +9,10 @@ class Book:
     direction: str
 
     def __eq__(self, __o: object) -> bool:
-        return self.name == __o.name
-
-    def __repr__(self) -> str:
-        return f"{self.name} at ({self.x}, {self.y})"
+        cond = (
+            (self.name.upper() == __o.name.upper()) and
+            (self.direction == __o.direction) and
+            (self.x == __o.x) and
+            (self.y == __o.y)
+        )
+        return cond

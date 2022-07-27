@@ -188,8 +188,8 @@ def solver2(
                 book_list.append(book)
         for iy, row in enumerate(h_bck):
             if word in row:
-                # start is now the end, so add length of the word
-                ix = row.find(word) + len(row)
+                # start is now the end, so we reverse
+                ix = (len(M) - 1) - row.find(word)
                 book = Book(
                     name=word,
                     x=ix,
@@ -199,7 +199,7 @@ def solver2(
                 book_list.append(book)
         for ix, col in enumerate(v_fwd):
             if word in col:
-                iy = row.find(word)
+                iy = col.find(word)
                 book = Book(
                     name=word,
                     x=ix,
@@ -210,7 +210,7 @@ def solver2(
         for ix, col in enumerate(v_bck):
             if word in col:
                 # start is now end, so end is start
-                iy = row.find(word) + len(word)
+                iy = (len(M) - 1) - col.find(word)
                 book = Book(
                     name=word,
                     x=ix,
@@ -223,7 +223,7 @@ def solver2(
             if word in diag:
                 init = diag.find(word)
                 ix = max(offset, 0) + init
-                iy = min(offset, 0) + init
+                iy = abs(min(offset, 0)) + init
                 book = Book(
                     name=word,
                     x=ix,
@@ -236,7 +236,7 @@ def solver2(
             if word in diag:
                 init = diag.find(word)
                 ix = max(offset, 0) + init + len(word)
-                iy = min(offset, 0) + init + len(word)
+                iy = abs(min(offset, 0)) + init + len(word)
                 book = Book(
                     name=word,
                     x=ix,
@@ -249,9 +249,8 @@ def solver2(
             if word in diag:
                 init = diag.find(word)
                 ix = max(offset, 0) + init
-                # because we are going anti-diagonal we reverse x
-                ix = len(M) - ix
-                iy = min(offset, 0) + init
+                ix = (len(M) - 1) - ix
+                iy = abs(min(offset, 0)) + init
                 book = Book(
                     name=word,
                     x=ix,
@@ -263,9 +262,11 @@ def solver2(
             offset = _offset - (len(M) - 1)
             if word in diag:
                 init = diag.find(word)
-                ix = max(offset, 0) + init + len(word)
-                ix = len(M) - ix
-                iy = min(offset, 0) + init + len(word)
+                ix = abs(min(0, offset)) + init
+                iy = (len(M) - 1) - (max(0, offset) + init)
+                #ix = (len(M) - 1) - ix
+                #ix = offset
+                #iy = init
                 book = Book(
                     name=word,
                     x=ix,

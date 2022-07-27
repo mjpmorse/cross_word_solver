@@ -4,19 +4,20 @@ import pytest
 from solver.solver import solver, solver2
 from solver.book import Book
 
-
 word_list = [
-    ('cat', 'VF'),
-    ('dog', 'HB'),
-    ('zoo', 'HF'),
-    ('fly', 'ADF'),
-    ('animal', 'ADF'),
-    ('cactus', 'ADF'),
-    ('welcome', 'VF'),
-    ('feed', 'DF'),
-    ('hat', "DB"),
-    ('moon', "ADB"),
-    ('make', "VB")
+    Book(name='cat', x=1, y=5, direction='vertical forward'),
+    Book(name='dog', x=2, y=2, direction='horizontal backward'),
+    Book(name='zoo', x=2, y=6, direction='horizontal forward'),
+    Book(name='fly', x=9, y=5, direction='anti-diagonal forward'),
+    Book(name='animal', x=9, y=4, direction='anti-diagonal forward'),
+    Book(name='cactus', x=5, y=0, direction='anti-diagonal forward'),
+    Book(name='welcome', x=4, y=2, direction='vertical forward'),
+    Book(name='feed', x=5, y=1, direction='diagonal forward'),
+    Book(name='hat', x=9, y=3, direction='diagonal backward'),
+    Book(name='moon', x=2, y=8, direction='anti-diagonal backward'),
+    Book(name='make', x=9, y=9, direction='vertical backward'),
+    Book(name='rod', x=0, y=4, direction='anti-diagonal backward'),
+    
 ]
 
 @pytest.fixture
@@ -61,5 +62,4 @@ def test_solver(
     d = load_dictionary
 
     books = solver2(m, d)
-    book_names = [book.name for book in books]
-    assert book[0].upper() in book_names
+    assert book in books
