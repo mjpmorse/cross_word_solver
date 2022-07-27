@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from solver.solver import solver, solver2
+from solver.solver import solver2
 from solver.book import Book
 
 word_list = [
@@ -17,7 +17,7 @@ word_list = [
     Book(name='moon', x=2, y=8, direction='anti-diagonal backward'),
     Book(name='make', x=9, y=9, direction='vertical backward'),
     Book(name='rod', x=0, y=4, direction='anti-diagonal backward'),
-    
+
 ]
 
 @pytest.fixture

@@ -1,123 +1,7 @@
 from typing import List
 import numpy as np
 from solver.book import Book
-
-def solver(
-    M: np.array,
-    word_list: List[str]
-) -> List[Book]:
-
-    book_list = []
-    for iy, ix in np.ndindex(M.shape):
-        h_fwd = ''.join([str(x) for x in M[ix, iy:]])
-        h_fwd = h_fwd.upper()
-        # +1 here since we want end point
-        h_bck = ''.join(
-            [str(x) for x in M[ix, :iy + 1][::-1]]
-        )
-        h_bck = h_bck.upper()
-        v_fwd = ''.join([str(x) for x in M[ix:, iy]])
-        v_fwd = v_fwd.upper()
-        # +1 here since we want end point
-        v_bck = ''.join(
-            [str(x) for x in M[:ix + 1, iy][::-1]]
-        )
-        v_bck = v_bck.upper()
-        # we could do this without making the submatrix,
-        # but the upper and lower submatrix will make this
-        # step cleaner and easier to read
-        # reverse the upper matrix so we can use diagonal
-        upperM = M[:ix + 1, :iy + 1][::-1, ::-1]
-        lowerM = M[ix:, iy:]
-        # now we grab the diagonals.
-        d_fwd = ''.join([str(x) for x in np.diagonal(lowerM)])
-        d_bck = ''.join([str(x) for x in np.diagonal(upperM)])
-        d_fwd = d_fwd.upper()
-        d_bck = d_bck.upper()
-
-        # also need anti-diagonal
-        lowerMad = M[ix:, :iy + 1][:, ::-1]
-        upperMad = M[:ix + 1, iy:][::-1, :]
-        ad_bck = ''.join([str(x) for x in np.diagonal(lowerMad)])
-        ad_fwd = ''.join([str(x) for x in np.diagonal(upperMad)])
-        ad_bck = ad_bck.upper()
-        ad_fwd = ad_fwd.upper()
-        for _word in word_list:
-            word = _word.upper()
-            if h_fwd.startswith(word):
-                book_list.append(
-                    Book(
-                        word,
-                        ix,
-                        iy,
-                        'horizontal forward'
-                    )
-                )
-            if h_bck.startswith(word):
-                book_list.append(
-                    Book(
-                        word,
-                        ix,
-                        iy,
-                        'horizontal backward'
-                    )
-                )
-            if v_fwd.startswith(word):
-                book_list.append(
-                    Book(
-                        word,
-                        ix,
-                        iy,
-                        'vertical forward'
-                    )
-                )
-            if v_bck.startswith(word):
-                book_list.append(
-                    Book(
-                        word,
-                        ix,
-                        iy,
-                        'vertical backward'
-                    )
-                )
-
-            if d_fwd.startswith(word):
-                book_list.append(
-                    Book(
-                        word,
-                        ix,
-                        iy,
-                        'diagonal forward'
-                    )
-                )
-            if d_bck.startswith(word):
-                book_list.append(
-                    Book(
-                        word,
-                        ix,
-                        iy,
-                        'diagonal backward'
-                    )
-                )
-            if ad_fwd.startswith(word):
-                book_list.append(
-                    Book(
-                        word,
-                        ix,
-                        iy,
-                        'anti-diagonal forward'
-                    )
-                )
-            if ad_bck.startswith(word):
-                book_list.append(
-                    Book(
-                        word,
-                        ix,
-                        iy,
-                        'anti-diagonal backward'
-                    )
-                )
-    return book_list
+from copy import deepcopy
 
 
 def remove_substring(book_list: List[Book]) -> List[Book]:
@@ -127,13 +11,16 @@ def remove_substring(book_list: List[Book]) -> List[Book]:
     Args:
         answers (List[Book]): _description_
     """
+    tmp = [deepcopy(x) for x in book_list]
     for book1 in book_list:
         for book2 in book_list:
             if (
                 (book2.name in book1.name) and
                 (book2.direction == book1.direction)
             ):
-                book_list.remove(book2)
+                tmp.remove(book2)
+                continue
+    return tmp
 
 def solver2(
     M: np.array,
@@ -235,8 +122,8 @@ def solver2(
             offset = _offset - (len(M) - 1)
             if word in diag:
                 init = diag.find(word)
-                ix = max(offset, 0) + init + len(word)
-                iy = abs(min(offset, 0)) + init + len(word)
+                ix = max(offset, 0) + (len(diag) - init - 1)
+                iy = abs(min(offset, 0)) + (len(diag) - init - 1)
                 book = Book(
                     name=word,
                     x=ix,
@@ -262,11 +149,9 @@ def solver2(
             offset = _offset - (len(M) - 1)
             if word in diag:
                 init = diag.find(word)
-                ix = abs(min(0, offset)) + init
-                iy = (len(M) - 1) - (max(0, offset) + init)
-                #ix = (len(M) - 1) - ix
-                #ix = offset
-                #iy = init
+                ix = max(offset, 0) + (len(diag) - init - 1)
+                ix = (len(M) - 1) - ix
+                iy = abs(min(offset, 0)) + (len(diag) - init - 1)
                 book = Book(
                     name=word,
                     x=ix,
